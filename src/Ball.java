@@ -48,6 +48,12 @@ public class Ball extends JLabel {
         counter++;
     }
 
+    public void decreaseSpeed() {
+        if (speed > 3) {
+            speed--;
+        }
+    }
+
     public void setSpeed(int speed) {
         this.speed = speed;
     }
@@ -73,7 +79,7 @@ public class Ball extends JLabel {
     }
 
     public void repulseFromEnd() {
-        if (getY() >= 1000 || getY() <= 0) {
+        if (getY() >= FRAME_HEIGHT || getY() <= 0) {
             yDirection = -yDirection;
         }
     }

@@ -38,11 +38,11 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
         leftPlayer = new Player(LEFT_PLAYER_X_LOCATION, PLAYER_DEFAULT_Y_LOCATION);
         rightPlayer = new Player(RIGHT_PLAYER_X_LOCATION, PLAYER_DEFAULT_Y_LOCATION);
         middleAxis = new MiddleAxis(WIDTH, HEIGHT);
-        gameOverSign = new GameOverSign();
+        gameOverSign = new GameOverSign(WIDTH, HEIGHT);
         ball = new Ball(WIDTH, HEIGHT, PLAYER_DEFAULT_Y_LOCATION, LEFT_PLAYER_X_LOCATION ,RIGHT_PLAYER_X_LOCATION);
         scoreLabel = new ScoreLabel(WIDTH, HEIGHT);
-        restartButton = new EndButton(EndButton.RESTART, this);
-        exitButton = new EndButton(EndButton.EXIT, this);
+        restartButton = new EndButton(EndButton.RESTART, this, WIDTH, HEIGHT);
+        exitButton = new EndButton(EndButton.EXIT, this, WIDTH, HEIGHT);
         icon = new ImageIcon("logo.jpg");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,7 +51,7 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
         this.getContentPane().setBackground(Color.BLACK);
         setTitle("Ping Pong");
         setIconImage(icon.getImage());
-        setResizable(true);
+        setResizable(false);
         setVisible(true);
 
         add(leftPlayer);
@@ -115,18 +115,19 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
 
     private void updateScore() {
         if (ball.getX() <= 0) {
-            leftScore++;
+            rightScore++;
+            ball.decreaseSpeed();
             ball.randomDirection();
             scoreLabel.update(leftScore, rightScore);
-            //ball.increaseSpeed();
         }
 
-        if (ball.getX() >= 1700) {
-            rightScore++;
+        if (ball.getX() >= WIDTH) {
+            leftScore++;
+            ball.decreaseSpeed();
             ball.randomDirection();
             scoreLabel.update(leftScore, rightScore);
-            //ball.increaseSpeed();
         }
+
     }
 
     private void gameOver() {
@@ -175,11 +176,23 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
     }
 
     private class GameOverSign extends JLabel {
-        GameOverSign() {
+
+        private int height, width, xLocation, yLocation, fontSize;
+
+        GameOverSign(int FRAME_WIDTH, int FRAME_HEIGHT) {
+            height = FRAME_HEIGHT / 5;
+            fontSize = height;
+            width = (FRAME_WIDTH / 170) * 103;
+            xLocation = (FRAME_WIDTH / 2) - (width / 2) -8;
+            yLocation = (FRAME_HEIGHT / 2) - (height / 2);
+
             setText("GAME OVER");
-            setFont(new Font("Bauhaus 93", Font.PLAIN, 200));
-            setBounds(326, 370, 1150, 200);
+            setFont(new Font("Bauhaus 93", Font.PLAIN, fontSize));
+            setBounds(xLocation, yLocation, width, height); // 326, 370, 1030, 200
+            setHorizontalAlignment(JLabel.CENTER);
             setForeground(Color.RED);
+            setBackground(Color.BLUE);
+            setOpaque(false);
             setVisible(false);
 
         }

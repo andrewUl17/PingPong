@@ -7,13 +7,25 @@ public class EndButton extends JButton {
     public static final String RESTART = "RESTART";
     public static final String EXIT = "EXIT";
 
-    public EndButton(String text, ActionListener e) {
+    private int height, width, xLocationLeft, xLocationRight, yLocation, fontSize, distanceToCentralPoint;
+
+    public EndButton(String text, ActionListener e, int FRAME_WIDTH, int FRAME_HEIGHT) {
+        distanceToCentralPoint = FRAME_HEIGHT / 17;
+        fontSize = (FRAME_HEIGHT / 100) * 15;
+        height = fontSize + 5;
+        width = (FRAME_WIDTH / 17) * 6;
+        xLocationLeft = /*(FRAME_WIDTH / 2) - width - */distanceToCentralPoint;
+        xLocationRight = /*(FRAME_WIDTH / 2) + distanceToCentralPoint*/ FRAME_WIDTH - width - distanceToCentralPoint;
+        yLocation = (FRAME_HEIGHT / 4) - (height / 2);
+
         //setBounds(830, 50, 300, 100);
         setText(text);
         setForeground(Color.GRAY);
-        setFont(new Font("Bauhaus 93", Font.PLAIN, 150));
+        setFont(new Font("Bauhaus 93", Font.PLAIN, fontSize));
         //setBounds(550, 170, 600, 180);
-        defineBounds(text);
+        setSize(width, height); // 600, (150 + 5)
+        defineLocation(text);
+        //setHorizontalAlignment(JButton.CENTER);
         setVisible(false);
         setEnabled(false);
         addActionListener(e);
@@ -22,12 +34,14 @@ public class EndButton extends JButton {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
     }
 
-    private void defineBounds(String text) {
+    private void defineLocation(String text) {
         if (text.equals(RESTART)) {
-            setBounds(150, 170, 600, 180);
+            setLocation(xLocationLeft, yLocation); // 150, 170
+            //setHorizontalAlignment(JButton.RIGHT);
         }
         else if (text.equals(EXIT)) {
-            setBounds(1000, 170, 600, 180);
+            setLocation(xLocationRight, yLocation); // 100, 170
+            //setHorizontalAlignment(JButton.RIGHT);
         }
     }
 }
