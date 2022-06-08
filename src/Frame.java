@@ -5,13 +5,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class Frame extends JFrame implements KeyListener, ActionListener {
+public class Frame extends JFrame implements KeyListener, ActionListener, Resizable {
 
     Player leftPlayer;
     Player rightPlayer;
-    JLabel middleAxis;
+    MiddleAxis middleAxis;
     Ball ball;
-    JLabel gameOverSign;
+    GameOverSign gameOverSign;
     ScoreLabel scoreLabel;
     EndButton restartButton;
     EndButton exitButton;
@@ -25,6 +25,7 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
     private final int RIGHT_PLAYER_X_LOCATION;
     private final int LEFT_PLAYER_X_LOCATION;
     private final int PLAYER_DEFAULT_Y_LOCATION;
+    private int lastHeight, lastWidth;
 
     public Frame(int WIDTH, int HEIGHT) {
         this.WIDTH = WIDTH;
@@ -32,14 +33,16 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
         LEFT_PLAYER_X_LOCATION = 50;
         RIGHT_PLAYER_X_LOCATION = WIDTH - 100;
         PLAYER_DEFAULT_Y_LOCATION = (HEIGHT / 2) - (Player.HEIGHT / 2);
+        lastHeight = HEIGHT;
+        lastWidth = WIDTH;
         //this.LEFT_PLAYER_X_LOCATION = LEFT_PLAYER_X_LOCATION;
         //this.RIGHT_PLAYER_X_LOCATION = RIGHT_PLAYER_X_LOCATION;
 
-        leftPlayer = new Player(LEFT_PLAYER_X_LOCATION, PLAYER_DEFAULT_Y_LOCATION);
-        rightPlayer = new Player(RIGHT_PLAYER_X_LOCATION, PLAYER_DEFAULT_Y_LOCATION);
+        leftPlayer = new Player(Player.LEFT, WIDTH, HEIGHT);
+        rightPlayer = new Player(Player.RIGHT, WIDTH, HEIGHT);
         middleAxis = new MiddleAxis(WIDTH, HEIGHT);
         gameOverSign = new GameOverSign(WIDTH, HEIGHT);
-        ball = new Ball(WIDTH, HEIGHT, PLAYER_DEFAULT_Y_LOCATION, LEFT_PLAYER_X_LOCATION ,RIGHT_PLAYER_X_LOCATION);
+        ball = new Ball(WIDTH, HEIGHT);
         scoreLabel = new ScoreLabel(WIDTH, HEIGHT);
         restartButton = new EndButton(EndButton.RESTART, this, WIDTH, HEIGHT);
         exitButton = new EndButton(EndButton.EXIT, this, WIDTH, HEIGHT);
@@ -51,7 +54,7 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
         this.getContentPane().setBackground(Color.BLACK);
         setTitle("Ping Pong");
         setIconImage(icon.getImage());
-        setResizable(false);
+        setResizable(true);
         setVisible(true);
 
         add(leftPlayer);
@@ -75,6 +78,7 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
             ball.repulseFromPlayer();
             updateScore();
             gameOver();
+            updateScale(getWidth(), getHeight());
         }
     });
 
@@ -121,7 +125,7 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
             scoreLabel.update(leftScore, rightScore);
         }
 
-        if (ball.getX() >= WIDTH) {
+        if (ball.getX() >= getWidth()) {
             leftScore++;
             ball.decreaseSpeed();
             ball.randomDirection();
@@ -167,15 +171,39 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
 
     }
 
-    private class MiddleAxis extends JLabel {
+    @Override
+    public void updateScale(int frameWidth, int frameHeight) {
+
+        if (frameWidth == lastWidth && frameHeight == lastHeight) {
+            return;
+        }
+        lastHeight = frameHeight;
+        lastWidth = frameWidth;
+
+        leftPlayer.updateScale(frameWidth, frameHeight);
+        rightPlayer.updateScale(frameWidth, frameHeight);
+        ball.updateScale(frameWidth, frameHeight);
+        scoreLabel.updateScale(frameWidth, frameHeight);
+        middleAxis.updateScale(frameWidth, frameHeight);
+        gameOverSign.updateScale(frameWidth, frameHeight);
+        restartButton.updateScale(frameWidth, frameHeight);
+        exitButton.updateScale(frameWidth, frameHeight);
+    }
+
+    private class MiddleAxis extends JLabel implements Resizable {
         MiddleAxis(int FRAME_WIDTH, int FRAME_HEIGHT) {
             setBackground(Color.LIGHT_GRAY);
             setBounds(((FRAME_WIDTH / 2) - 5), 0, 10, FRAME_HEIGHT);
             setOpaque(true);
         }
+
+        @Override
+        public void updateScale(int frameWidth, int frameHeight) {
+            setBounds(((frameWidth / 2) - 5), 0, 10, frameHeight);
+        }
     }
 
-    private class GameOverSign extends JLabel {
+    private class GameOverSign extends JLabel implements Resizable {
 
         private int height, width, xLocation, yLocation, fontSize;
 
@@ -195,6 +223,17 @@ public class Frame extends JFrame implements KeyListener, ActionListener {
             setOpaque(false);
             setVisible(false);
 
+        }
+
+        @Override
+        public void updateScale(int frameWidth, int frameHeight) {
+            height = frameHeight / 5;
+            fontSize = height;
+            width = (frameWidth / 170) * 103;
+            xLocation = (frameWidth / 2) - (width / 2) -8;
+            yLocation = (frameHeight / 2) - (height / 2);
+
+            setBounds(xLocation, yLocation, width, height);
         }
     }
 }

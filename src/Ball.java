@@ -2,13 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
-public class Ball extends JLabel {
+public class Ball extends JLabel implements Resizable {
 
-    private final int FRAME_WIDTH, FRAME_HEIGHT,
-                      DEFAULT_X_LOCATION, DEFAULT_Y_LOCATION,
-                      RIGHT_PLAYER_X_LOCATION, LEFT_PLAYER_X_LOCATION, PLAYER_DEFAULT_Y_LOCATION;
+    private final int FRAME_WIDTH, FRAME_HEIGHT;
     private int speed = 3;
-    private int xDirection, yDirection, leftPlayerY, rightPlayerY;
+    private int xDirection, yDirection, leftPlayerY, rightPlayerY,
+                defaultXLocation, defaultYLocation,
+                rightPlayerXLocation, leftPlayerXLocation, actualFrameHeight;
     //private int yDirection;
     //private int rightPlayerY;
     private boolean movingInPositiveWay;
@@ -16,21 +16,21 @@ public class Ball extends JLabel {
     public static final int SIZE = 10;
     //private final int DEFAULT_X_LOCATION, DEFAULT_Y_LOCATION;
 
-    public Ball(int FRAME_WIDTH, int FRAME_HEIGHT,
-                 int PLAYER_DEFAULT_Y_LOCATION, int LEFT_PLAYER_X_LOCATION, int RIGHT_PLAYER_X_LOCATION) {
+    public Ball(int FRAME_WIDTH, int FRAME_HEIGHT) {
 
-        this.PLAYER_DEFAULT_Y_LOCATION = PLAYER_DEFAULT_Y_LOCATION;
+        //this.PLAYER_DEFAULT_Y_LOCATION = PLAYER_DEFAULT_Y_LOCATION;
         this.FRAME_WIDTH = FRAME_WIDTH;
         this.FRAME_HEIGHT = FRAME_HEIGHT;
-        this.RIGHT_PLAYER_X_LOCATION = RIGHT_PLAYER_X_LOCATION;
-        this.LEFT_PLAYER_X_LOCATION = LEFT_PLAYER_X_LOCATION;
+        actualFrameHeight = FRAME_HEIGHT;
 
-        leftPlayerY = PLAYER_DEFAULT_Y_LOCATION;
-        rightPlayerY = PLAYER_DEFAULT_Y_LOCATION;
-        DEFAULT_X_LOCATION = (FRAME_WIDTH /2) - (SIZE/2);
-        DEFAULT_Y_LOCATION = (FRAME_HEIGHT /2) - (SIZE/2);
+        leftPlayerXLocation = 50;
+        rightPlayerXLocation = FRAME_WIDTH - 100;
+        leftPlayerY = (FRAME_HEIGHT / 2) - (Player.HEIGHT / 2);
+        rightPlayerY = (FRAME_HEIGHT / 2) - (Player.HEIGHT / 2);
+        defaultXLocation = (FRAME_WIDTH /2) - (SIZE/2);
+        defaultYLocation = (FRAME_HEIGHT /2) - (SIZE/2);
 
-        setBounds(DEFAULT_X_LOCATION, DEFAULT_Y_LOCATION, SIZE, SIZE);
+        setBounds(defaultXLocation, defaultYLocation, SIZE, SIZE);
         setBackground(Color.WHITE);
         setOpaque(true);
         randomDirection();
@@ -79,13 +79,13 @@ public class Ball extends JLabel {
     }
 
     public void repulseFromEnd() {
-        if (getY() >= FRAME_HEIGHT || getY() <= 0) {
+        if (getY() >= actualFrameHeight || getY() <= 0) {
             yDirection = -yDirection;
         }
     }
 
     public void repulseFromPlayer() {
-        if (getX() >= LEFT_PLAYER_X_LOCATION && getX() <= (LEFT_PLAYER_X_LOCATION + Player.LENGTH)) {
+        if (getX() >= leftPlayerXLocation && getX() <= (leftPlayerXLocation + Player.LENGTH)) {
             if (getY() >= leftPlayerY && getY() <= (leftPlayerY + Player.HEIGHT)) {
                 xDirection = -xDirection;
                 increaseSpeed();
@@ -93,7 +93,7 @@ public class Ball extends JLabel {
             }
         }
 
-        if (getX() >= RIGHT_PLAYER_X_LOCATION && getX() <= (RIGHT_PLAYER_X_LOCATION + Player.LENGTH)) {
+        if (getX() >= rightPlayerXLocation && getX() <= (rightPlayerXLocation + Player.LENGTH)) {
             if (getY() >= rightPlayerY && getY() <= (rightPlayerY + Player.HEIGHT)) {
                 xDirection = -xDirection;
                 increaseSpeed();
@@ -131,7 +131,7 @@ public class Ball extends JLabel {
 
         xDirection = translateRandom(random.nextInt(2));
         yDirection = translateRandom(random.nextInt(2));
-        setLocation(845, 495);
+        setLocation(defaultXLocation, defaultYLocation);
         updateSpeed();
     }
 
@@ -142,4 +142,16 @@ public class Ball extends JLabel {
         return speed;
     }
 
+    @Override
+    public void updateScale(int frameWidth, int frameHeight) {
+        leftPlayerXLocation = 50;
+        rightPlayerXLocation = frameWidth - 100;
+        leftPlayerY = (frameHeight / 2) - (Player.HEIGHT / 2);
+        rightPlayerY = (frameHeight / 2) - (Player.HEIGHT / 2);
+        defaultXLocation = (frameWidth /2) - (SIZE/2);
+        defaultYLocation = (frameHeight /2) - (SIZE/2);
+        actualFrameHeight = frameHeight;
+
+        randomDirection();
+    }
 }

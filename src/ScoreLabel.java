@@ -1,14 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class ScoreLabel extends JLabel {
+public class ScoreLabel extends JLabel implements Resizable{
 
     private String score = "00   00";
 
-    private final int HEIGHT;
-    private final int WIDTH;
+    private int HEIGHT;
+    private int WIDTH;
     //private final int FONT_SIZE;
-    private final int X_POSITION;
+    private int X_POSITION;
 
     public ScoreLabel(int FRAME_WIDTH, int FRAME_HEIGHT) {
         HEIGHT = (FRAME_HEIGHT / 100) * 15;
@@ -18,7 +18,7 @@ public class ScoreLabel extends JLabel {
         setText(score);
         setHorizontalAlignment(JLabel.CENTER);
         setFont(new Font("Bauhaus 93", Font.PLAIN, 100));
-        setBounds(X_POSITION, 0, 310, 150); // default bounds: 695, 0, 310, 150
+        setBounds(X_POSITION, 0, WIDTH, HEIGHT); // default bounds: 695, 0, 310, 150
         setForeground(Color.WHITE);
         setBackground(Color.BLUE);
         setOpaque(false);
@@ -35,5 +35,14 @@ public class ScoreLabel extends JLabel {
             return "0" + num;
         }
         return num.toString();
+    }
+
+    @Override
+    public void updateScale(int frameWidth, int frameHeight) {
+        HEIGHT = (frameHeight / 100) * 15;
+        WIDTH = 310;
+        X_POSITION = (frameWidth / 2) - (WIDTH / 2) - 3;
+
+        setBounds(X_POSITION, 0, WIDTH, HEIGHT);
     }
 }
